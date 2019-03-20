@@ -7,12 +7,12 @@ namespace DecisionAPI.Data
 {
     public class DbSeeder
     {
-        public static void SeedDb(QuotesDbContext context)
+        public static void SeedDb(ApplicationDbContext context)
         {
             SeedQuotes(context);
 
         }
-        public static void SeedQuotes(QuotesDbContext context)
+        public static void SeedQuotes(ApplicationDbContext context)
         {
             context.Database.EnsureCreated();
             context.Quotes.Add(

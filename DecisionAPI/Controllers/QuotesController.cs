@@ -13,11 +13,11 @@ namespace DecisionAPI.Controllers
     [ApiController]
     public class QuotesController : ControllerBase
     {
-        private QuotesDbContext _quotesDbContext;
+        private ApplicationDbContext _applicationDbContext;
 
-        public QuotesController(QuotesDbContext quotesDbContext)
+        public QuotesController(ApplicationDbContext applicationDbContext)
         {
-            _quotesDbContext = quotesDbContext;
+            _applicationDbContext = applicationDbContext;
         }
 
         // GET: api/Quotes
@@ -25,7 +25,7 @@ namespace DecisionAPI.Controllers
         public IEnumerable<Quote> Get()
         {
             //return new string[] { "value1", "value2" };
-            return _quotesDbContext.Quotes;
+            return _applicationDbContext.Quotes;
         }
 
         // GET: api/Quotes/5

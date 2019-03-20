@@ -27,14 +27,14 @@ namespace DecisionAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<QuotesDbContext>(options =>
+            services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, QuotesDbContext quotesDbContext)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ApplicationDbContext applicationDbContext)
         {
             if (env.IsDevelopment())
             {
@@ -48,7 +48,7 @@ namespace DecisionAPI
 
             app.UseHttpsRedirection();
 
-            quotesDbContext.Database.EnsureCreated();
+            applicationDbContext.Database.EnsureCreated();
 
             app.UseMvc();
         }

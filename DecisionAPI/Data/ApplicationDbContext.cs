@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace DecisionAPI.Data
 {
-    public class QuotesDbContext : DbContext
+    public class ApplicationDbContext : DbContext
     {
-        public QuotesDbContext(DbContextOptions<QuotesDbContext>options):base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext>options):base(options)
         {
 
         }
