@@ -30,7 +30,8 @@ namespace DecisionAPI
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().AddXmlSerializerFormatters().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,7 +49,8 @@ namespace DecisionAPI
 
             app.UseHttpsRedirection();
 
-            applicationDbContext.Database.EnsureCreated();
+            //applicationDbContext.Database.EnsureCreated();
+            applicationDbContext.Database.Migrate();
 
             app.UseMvc();
         }

@@ -22,49 +22,78 @@ namespace DecisionAPI.Controllers
 
         // GET: api/Quotes
         [HttpGet]
-        public IEnumerable<Quote> Get()
+        public IActionResult Get()
         {
             //return new string[] { "value1", "value2" };
-            return _applicationDbContext.Quotes;
+            //return _applicationDbContext.Quotes;
+            return Ok(_applicationDbContext.Quotes);
         }
 
         // GET: api/Quotes/5
         [HttpGet("{id}", Name = "Get")]
-        public Quote Get(int id)
+        public IActionResult Get(int id)
         {
             var quote = _applicationDbContext.Quotes.Find(id);
-
-            return quote;
+            if (quote == null)
+            {
+                return NotFound("No record found against this Id...");
+            }
+            else
+            {
+                return Ok(quote);
+            }
         }
 
         // POST: api/Quotes
         [HttpPost]
-        public void Post([FromBody] Quote quote)
+        public IActionResult Post([FromBody] Quote quote)
         {
             _applicationDbContext.Quotes.Add(quote);
             _applicationDbContext.SaveChanges();
+
+            return StatusCode(StatusCodes.Status201Created);
+
         }
 
         // PUT: api/Quotes/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] Quote quote)
+        public IActionResult Put(int id, [FromBody] Quote quote)
         {
            var entity = _applicationDbContext.Quotes.Find(id);
-            entity.Title = quote.Title;
-            entity.Author = quote.Author;
-            entity.Description = quote.Description;
+            if(entity==null)
+            {
+                return NotFound("No record found against this Id...");
+            }
+            else
+            {
+                entity.Title = quote.Title;
+                entity.Author = quote.Author;
+                entity.Description = quote.Description;
 
-            _applicationDbContext.SaveChanges();
+                _applicationDbContext.SaveChanges();
+                return Ok("Record Updated Successfully.....");
+            }
+
+
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
            var quote = _applicationDbContext.Quotes.Find(id);
-            _applicationDbContext.Remove(quote);
+            if (quote == null)
+            {
+                return NotFound("No record found against this Id...");
+            }
+            else
+            {
+                _applicationDbContext.Remove(quote);
 
-            _applicationDbContext.SaveChanges();
+                _applicationDbContext.SaveChanges();
+
+                return Ok("Quote deleted....");
+            }
         }
     }
 }
