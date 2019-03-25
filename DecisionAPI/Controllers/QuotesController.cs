@@ -22,11 +22,47 @@ namespace DecisionAPI.Controllers
 
         // GET: api/Quotes
         [HttpGet]
-        public IActionResult Get()
+        [ResponseCache(Duration = 60, Location =ResponseCacheLocation.Any)]
+        public IActionResult Get(string sort)
         {
+            IQueryable<Quote> quotes;
+            switch (sort)
+            {
+                case "desc":
+                  quotes =  _applicationDbContext.Quotes.OrderByDescending(q => q.CreatedAt);
+                    break;
+                case "asc":
+                    quotes = _applicationDbContext.Quotes.OrderBy(q => q.CreatedAt);
+                    break;
+                default:
+                    quotes = _applicationDbContext.Quotes;
+                    break;
+
+            }
+
             //return new string[] { "value1", "value2" };
             //return _applicationDbContext.Quotes;
-            return Ok(_applicationDbContext.Quotes);
+            return Ok(quotes);
+        }
+
+        [HttpGet("[action]")]
+        //[Route("[action]")]
+        public IActionResult PagingQuote(int? pageNumber, int? pageSize)
+        {
+            var quotes = _applicationDbContext.Quotes;
+          var currentPageNumber =   pageNumber ?? 1;
+            var currentPageSize = pageSize ?? 5;
+
+            return Ok(quotes.Skip((currentPageNumber - 1)* currentPageSize).Take(currentPageSize));
+
+        }
+
+        [HttpGet("[action]")]
+        public IActionResult SearchQuote(string type)
+        {
+
+            var quotes = _applicationDbContext.Quotes.Where(q=> q.Type.StartsWith(type));
+            return Ok(quotes);
         }
 
         // GET: api/Quotes/5
@@ -42,6 +78,11 @@ namespace DecisionAPI.Controllers
             {
                 return Ok(quote);
             }
+        }
+        [HttpGet("[action]/{id}")]
+        public int Test(int id)
+        {
+            return id;
         }
 
         // POST: api/Quotes
@@ -69,6 +110,8 @@ namespace DecisionAPI.Controllers
                 entity.Title = quote.Title;
                 entity.Author = quote.Author;
                 entity.Description = quote.Description;
+                entity.Type = quote.Type;
+                entity.CreatedAt = quote.CreatedAt;
 
                 _applicationDbContext.SaveChanges();
                 return Ok("Record Updated Successfully.....");

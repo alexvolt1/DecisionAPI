@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DecisionAPI.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -31,6 +32,18 @@ namespace DecisionAPI
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddMvc().AddXmlSerializerFormatters().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddResponseCaching();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            }).AddJwtBearer(options =>
+            {
+                options.Authority = "https://alvocor2.auth0.com/";
+                options.Audience = "https://localhost:44388";
+            });
 
         }
 
@@ -51,6 +64,11 @@ namespace DecisionAPI
 
             //applicationDbContext.Database.EnsureCreated();
             applicationDbContext.Database.Migrate();
+
+            app.UseResponseCaching();
+
+            // 2. Enable authentication middleware
+            app.UseAuthentication();
 
             app.UseMvc();
         }
