@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using DecisionAPI.Data;
 using DecisionAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +13,7 @@ namespace DecisionAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class QuotesController : ControllerBase
     {
         private ApplicationDbContext _applicationDbContext;
@@ -89,6 +92,8 @@ namespace DecisionAPI.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Quote quote)
         {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            quote.UserId = userId;
             _applicationDbContext.Quotes.Add(quote);
             _applicationDbContext.SaveChanges();
 
