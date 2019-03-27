@@ -68,6 +68,14 @@ namespace DecisionAPI.Controllers
             return Ok(quotes);
         }
 
+        [HttpGet("[action]")]
+        public IActionResult MyQuote()
+        {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            var quotes = _applicationDbContext.Quotes.Where(q => q.UserId==userId);
+            return Ok(quotes);
+        }
+
         // GET: api/Quotes/5
         [HttpGet("{id}", Name = "Get")]
         public IActionResult Get(int id)
@@ -105,10 +113,16 @@ namespace DecisionAPI.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Quote quote)
         {
-           var entity = _applicationDbContext.Quotes.Find(id);
+            string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+
+            var entity = _applicationDbContext.Quotes.Find(id);
             if(entity==null)
             {
                 return NotFound("No record found against this Id...");
+            }
+            if (userId != entity.UserId)
+            {
+                return BadRequest("Sorry, you can't update this record ...");
             }
             else
             {
@@ -129,10 +143,15 @@ namespace DecisionAPI.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-           var quote = _applicationDbContext.Quotes.Find(id);
+            string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            var quote = _applicationDbContext.Quotes.Find(id);
             if (quote == null)
             {
                 return NotFound("No record found against this Id...");
+            }
+            if (userId != quote.UserId)
+            {
+                return BadRequest("Sorry, you can't delete this record ...");
             }
             else
             {
